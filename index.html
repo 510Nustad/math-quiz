@@ -120,6 +120,7 @@
       <div id="button-group">
         <button id="backBtn">← Back</button>
         <button id="skipBtn">Skip →</button>
+        <button id="similarBtn">Similar Question</button>
         <button id="showAnsBtn">Show Answer</button>
         <button id="checkBtn">Check</button>
       </div>
@@ -137,7 +138,6 @@
   <script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
   <script>
     const questions = [
-      // Removed inline answers from q strings
       { q: "#1 Even, odd, or neither? Determine whether the function below is even, odd, or neither:<br>f(x)=x−7/x", a: "neither" },
       { q: "#2 Graph shift (square root). Write an equation for the graph of y=√x shifted 5 units to the left, then 2 units up.", a: "sqrt(x+5)+2" },
       { q: "#3 Complex fraction. Simplify and write in a+bi form: (7+2i)/(−5−6i)", a: "-47/61+32/61i" },
@@ -153,6 +153,74 @@
       { q: "#13 Function composition. Given f(x)=3x^2+6x+9, g(x)=5x+2, find (g∘f)(x).", a: "15x^2+30x+47" }
     ];
 
+    const similar = [
+      [
+        "Determine whether f(x)=2x−8/x is even, odd, or neither.",
+        "Determine whether g(x)=x^3+5/x is even, odd, or neither.",
+        "Determine whether h(x)=x^2−9/x^2 is even, odd, or neither."
+      ],
+      [
+        "Write y=√x shifted 3 units left and 4 units up.",
+        "Write y=√x shifted 2 units right and 6 units down.",
+        "Write y=√x shifted 7 units left and 1 unit up."
+      ],
+      [
+        "Simplify (3−2i)/(4+3i) into a+bi.",
+        "Simplify (5+6i)/(−2+i) into a+bi.",
+        "Simplify (−7+i)/(3−4i) into a+bi."
+      ],
+      [
+        "Find zeros of f(x)=3x^2+5x−2.",
+        "Find zeros of f(x)=2x^2−8x+6.",
+        "Find zeros of f(x)=x^2+x−12."
+      ],
+      [
+        "For x^2+4x+5=0 compute Δ and nature of roots.",
+        "Rewrite 5x^2=−20x+15 compute Δ and roots.",
+        "For 4x^2−x+2=0 compute Δ and state nature of roots."
+      ],
+      [
+        "Parabola f(x)=x^2+2x−3 features?",
+        "Parabola f(x)=2x^2−6x+4 features?",
+        "Parabola f(x)=−x^2+4x+1 features?"
+      ],
+      [
+        "Classify p(x)=x^5−2x+3.",
+        "Classify q(x)=7x^3−x^2+x−9.",
+        "Classify r(x)=4."
+      ],
+      [
+        "Sketch f(x)=x^3−2x^2+x−2. Mark intercepts.",
+        "Sketch f(x)=x^3+x^2−4x−4. Mark intercepts.",
+        "Sketch f(x)=x^3−3x−1. Mark intercepts."
+      ],
+      [
+        "Divide (x^3+3x^2−6x+2) by (x−1).",
+        "Divide (x^3−5x+10) by (x+2).",
+        "Divide (2x^3−x^2+4) by (x−2)."
+      ],
+      [
+        "Zeros of x^3−6x^2+11x−6?",
+        "Zeros of x^3+x^2−2x−2?",
+        "Zeros of x^3−x^2−x+1?"
+      ],
+      [
+        "Graph f(x)=(x−3)/(x+2)?",
+        "Graph f(x)=(x+2)/(x−1)?",
+        "Graph f(x)=(2x−5)/(x+3)?"
+      ],
+      [
+        "Solve x^2−5x+4≤0.",
+        "Solve x^2+x−6<0.",
+        "Solve −x^2+2x+3<0."
+      ],
+      [
+        "Find (g∘f)(x) for f(x)=2x^2+3x+1,g(x)=3x−2.",
+        "Find (g∘f)(x) for f(x)=x^2−4x+5,g(x)=5x+6.",
+        "Find (g∘f)(x) for f(x)=4x^2−x+7,g(x)=−2x+3."
+      ]
+    ];
+
     let current = 0;
     let board;
     const questionEl = document.getElementById('question');
@@ -163,6 +231,7 @@
     const feedbackEl = document.getElementById('feedback');
     const graphFeedback = document.getElementById('graphFeedback');
     const meow = document.getElementById('meow');
+    const similarBtn = document.getElementById('similarBtn');
     const showAnsBtn = document.getElementById('showAnsBtn');
 
     function loadQuestion() {
@@ -203,9 +272,17 @@
       }
     });
 
+    similarBtn.addEventListener('click', () => {
+      const sims = similar[current] || [];
+      if (sims.length) {
+        const pick = sims[Math.floor(Math.random() * sims.length)];
+        questionEl.innerHTML = pick;
+        feedbackEl.textContent = '';
+      }
+    });
+
     showAnsBtn.addEventListener('click', () => {
-      const answerText = questions[current].a;
-      feedbackEl.textContent = 'Answer: ' + answerText;
+      feedbackEl.textContent = 'Answer: ' + questions[current].a;
       feedbackEl.classList.remove('correct');
       feedbackEl.style.color = '#555';
     });
