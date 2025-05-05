@@ -5,69 +5,204 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Study Quiz</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
-    h1 { text-align: center; }
-    #question { margin-bottom: 15px; font-weight: bold; }
-    #answerBox { width: 100%; padding: 8px; font-size: 16px; box-sizing: border-box; }
-    #checkBtn { padding: 8px 16px; font-size: 16px; margin-top: 10px; }
-    #feedback { margin-top: 15px; font-weight: bold; }
+    /* Global Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #1a73e8;
+    }
+
+    /* Container */
+    #container {
+      width: 90%;
+      max-width: 600px;
+      margin: 40px 0;
+    }
+    #cheatsheet, #quiz-container {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    #cheatsheet h2 {
+      margin-top: 0;
+      color: #1a73e8;
+    }
+    #cheatsheet ul {
+      list-style: inside disc;
+      padding-left: 0;
+    }
+
+    /* Quiz Elements */
+    #question {
+      margin-bottom: 15px;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    #answerBox {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+    #button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      flex: 1 1 auto;
+      padding: 10px 0;
+      font-size: 1em;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    button:hover {
+      background-color: #1558b0;
+    }
+    #feedback {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #d93025;
+    }
+    #feedback.correct {
+      color: #188038;
+    }
   </style>
 </head>
 <body>
-  <h1>Study Quiz</h1>
-  <div id="quiz-container">
-    <div id="question"></div>
-    <input type="text" id="answerBox" placeholder="Type your answer here">
-    <button id="checkBtn">Check</button>
-    <div id="feedback"></div>
+  <div id="container">
+    <h1>Study Quiz</h1>
+    <audio id="meow" src="meow.mp3"></audio>
+
+    <div id="cheatsheet">
+      <h2>Answer Input Cheat Sheet</h2>
+      <ul>
+        <li>Fractions: use numerator/denominator, e.g.: 22/25</li>
+        <li>Complex: a+bi format, no spaces, e.g.: 22/25-29/25i</li>
+        <li>Lists: separate answers with commas, e.g.: 3,-3,2</li>
+        <li>Intervals: parentheses/unions, e.g.: (-∞,-7)∪(2,∞)</li>
+        <li>Equations: use ^, parentheses for shifts: (x-4)^2-2</li>
+        <li>Square roots: √ or sqrt(), e.g.: √61 or sqrt(61)</li>
+      </ul>
+    </div>
+
+    <div id="quiz-container">
+      <div id="question"></div>
+      <input type="text" id="answerBox" placeholder="Type your answer here">
+      <div id="button-group">
+        <button id="backBtn">← Back</button>
+        <button id="skipBtn">Skip →</button>
+        <button id="checkBtn">Check</button>
+      </div>
+      <div id="feedback"></div>
+    </div>
   </div>
 
   <script>
     const questions = [
-      { q: "Determine whether the function is even, odd, or neither. g(x) = x³ - 7x", a: "odd" },
-      { q: "Write an equation: y = x² shifted 4 units right then 2 units down.", a: "(x-4)^2-2" },
-      { q: "Simplify (7 - 2i) / (4 + 3i) in a + bi form.", a: "22/25 - 29/25i" },
-      { q: "Find zeros of h(x)=3x² + x - 5.", a: "(-1+√61)/6,(-1-√61)/6" },
-      { q: "Discriminant of 3x² + 6x + 4 = 0: number/type of solutions.", a: "two distinct imaginary solutions" },
-      { q: "For f(x)=-x²+4x+5: x-intercepts, y-intercept, axis of symmetry, vertex, max/min.", a: "x-intercepts: -1,5; y-intercept:5; axis: x=2; vertex:(2,9); maximum" },
-      { q: "Classify p(x)=9x - 5x⁴ + 2x² - 1: type, leading term, coefficient, degree.", a: "quartic; leading term:-5x^4; coefficient:-5; degree:4" },
-      { q: "Graph f(x)=x³-2x²-9x+18: zeros and y-intercept.", a: "zeros:3,-3,2; y-intercept:18" },
-      { q: "(2x³ + 3x² - 4) ÷ (x - 1): quotient and remainder.", a: "2x^2+5x+5, remainder 1" },
-      { q: "Find all zeros of x³+2x²-5x-6.", a: "2,-1,-3" },
-      { q: "For g(x)=(x+3)/(x-2): asymptotes, x- and y-intercepts.", a: "vertical: x=2; horizontal: y=1; x-int:-3; y-int:-1.5" },
-      { q: "Solve x²+5x-14>0 in interval notation.", a: "(-∞,-7)∪(2,∞)" },
-      { q: "Compute (f ∘ g)(x) for f(x)=x²-2x+3, g(x)=2x+5.", a: "4x²+16x+18" }
+      { q: "#1 Determine whether the function is even, odd, or neither. g(x) = x³ - 7x", a: "odd" },
+      { q: "#2 Write an equation for a function that has a graph with the given characteristics. The shape of y = x² is shifted 4 units to the right. Then the graph is shifted 2 units downward.", a: "(x-4)^2-2" },
+      { q: "#3 Simplify. Write your answer in the form a+bi. (7 - 2i) / (4 + 3i)", a: "22/25-29/25i" },
+      { q: "#4 Find the zeros of the function. Give exact answers. h(x) = 3x² + x - 5", a: "(-1+√61)/6,(-1-√61)/6" },
+      { q: "#5 Using the discriminant, b² - 4ac, determine if there is one real solution, two distinct real solutions, or two distinct imaginary solutions. 3x² + 4 = -6x", a: "two distinct imaginary solutions" },
+      { q: "#6 Find the x- and y-intercepts, axis of symmetry, vertex, and state whether the vertex is a maximum or minimum value. f(x) = -x² + 4x + 5", a: "x-intercepts:-1,5;y-intercept:5;axis:x=2;vertex:(2,9);maximum" },
+      { q: "#7 Classify the polynomial as constant, linear, quadratic, cubic, or quartic, and determine the leading term, the leading coefficient, and the degree of the polynomial. p(x) = 9x - 5x⁴ + 2x² - 1", a: "quartic;leading term:-5x^4;coefficient:-5;degree:4" },
+      { q: "#8 Graph the function. Find the zeros and y-intercept to help you graph. f(x) = x³ - 2x² - 9x + 18 (Hint: Consider factoring by grouping)", a: "zeros:3,-3,2;y-intercept:18" },
+      { q: "#9 Use synthetic division to find the quotient and the remainder. (2x³ + 3x² - 4) ÷ (x - 1)", a: "2x^2+5x+5,remainder1" },
+      { q: "#10 Find all the zeros of the polynomial function. h(x) = x³ + 2x² - 5x - 6 (Hint: Use the Rational Root Theorem to find possible rational zeros)", a: "2,-1,-3" },
+      { q: "#11 Graph the function. Identify and show all asymptotes (vertical, horizontal, or slant) as dashed lines. List the x- and y-intercepts. g(x) = (x + 3) / (x - 2)", a: "vertical:x=2;horizontal:y=1;x-int:-3;y-int:-1.5" },
+      { q: "#12 Solve the inequality. Write your answer in interval notation. x² + 5x - 14 > 0", a: "(-∞,-7)∪(2,∞)" },
+      { q: "#13 For the pair of functions, find the indicated composition. f(x) = x² - 2x + 3, g(x) = 2x + 5. Find (f ∘ g)(x)", a: "4x^2+16x+18" },
+      { q: "#14 Simplify. Write your answer in the form a+bi. (2 + 3i)(4 - i)", a: "11+10i" },
+      { q: "#15 Determine whether the function is even, odd, or neither. g(x) = x^4 - x^2", a: "even" },
+      { q: "#16 Write an equation for a function that has a graph with the given characteristics. The shape of y = √x is shifted 3 units to the left. Then the graph is shifted 1 unit upward.", a: "sqrt(x+3)+1" },
+      { q: "#17 Simplify. Write your answer in the form a+bi. (5 - i) / (2 + 4i)", a: "3/10-11/10i" },
+      { q: "#18 Solve for x: x² - 9 = 0", a: "3,-3" },
+      { q: "#19 Factor completely: x² - 5x + 6", a: "(x-2)(x-3)" },
+      { q: "#20 Solve the inequality: 2x - 3 < 7", a: "x<5" },
+      { q: "#21 Find the zeros of the function. f(x) = x² - 4x + 3", a: "1,3" },
+      { q: "#22 Find the domain of g(x) = 1 / (x + 2)", a: "(-∞,-2)∪(-2,∞)" },
+      { q: "#23 Expand: (x + 2)³", a: "x^3+6x^2+12x+8" },
+      { q: "#24 Simplify: log10(1000)", a: "3" },
+      { q: "#25 Solve: e^(2x) = 5", a: "ln(5)/2" },
+      { q: "#26 Simplify: √50", a: "5√2" },
+      { q: "#27 Solve the system: 2x + y = 5; x - y = 1", a: "x=2,y=1" },
+      { q: "#28 Find the midpoint between (1,2) and (5,8)", a: "3,5" },
+      { q: "#29 For f(x) = (2x+1)/(x-3): vertical and horizontal asymptotes; x- and y-intercepts", a: "vertical:x=3;horizontal:y=2;x-int:-1/2;y-int:-1/3" },
+      { q: "#30 Simplify: √18", a: "3√2" },
+      { q: "#31 Convert to a single logarithm: log a + log b", a: "log(ab)" },
+      { q: "#32 Expand: (x - y)²", a: "x^2-2xy+y^2" },
+      { q: "#33 Simplify: (x³)²", a: "x^6" },
+      { q: "#34 Evaluate at x=2: f(x) = 3x + 4", a: "10" },
+      { q: "#35 Find the distance between (0,0) and (3,4)", a: "5" },
+      { q: "#36 Simplify: x^0", a: "1" },
+      { q: "#37 Evaluate: | -5 |", a: "5" },
+      { q: "#38 Simplify: sin(0)", a: "0" },
+      { q: "#39 Evaluate: cos(π)", a: "-1" }
     ];
 
     let current = 0;
     const questionEl = document.getElementById('question');
     const answerBox = document.getElementById('answerBox');
-    const checkBtn = document.getElementById('checkBtn');
-    const feedback = document.getElementById('feedback');
+    const feedbackEl = document.getElementById('feedback');
+    const meow = document.getElementById('meow');
 
     function loadQuestion() {
-      const { q } = questions[current];
-      questionEl.textContent = `Question ${current+1}: ${q}`;
+      let { q } = questions[current];
+      questionEl.innerHTML = q;
       answerBox.value = '';
-      feedback.textContent = '';
+      feedbackEl.textContent = '';
+      feedbackEl.classList.remove('correct');
     }
 
-    checkBtn.addEventListener('click', () => {
-      const userAns = answerBox.value.replace(/\s+/g, '').toLowerCase();
-      const correctAns = questions[current].a.replace(/\s+/g, '').toLowerCase();
-      if (userAns === correctAns) {
-        feedback.textContent = 'Good job!';
-        current++;
-        if (current < questions.length) {
-          setTimeout(loadQuestion, 1000);
-        } else {
-          questionEl.textContent = 'Quiz Complete!';
-          answerBox.style.display = 'none';
-          checkBtn.style.display = 'none';
-        }
+    function endQuiz() {
+      questionEl.textContent = 'Quiz Complete!';
+      answerBox.style.display = 'none';
+      document.getElementById('button-group').style.display = 'none';
+    }
+
+    document.getElementById('checkBtn').addEventListener('click', () => {
+      const user = answerBox.value.replace(/\s+/g, '').toLowerCase();
+      const correct = questions[current].a.replace(/\s+/g, '').toLowerCase();
+      if (user === correct) {
+        meow.play();
+        feedbackEl.textContent = 'Good job!';
+        feedbackEl.classList.add('correct');
+        setTimeout(() => {
+          current++;
+          if (current < questions.length) loadQuestion(); else endQuiz();
+        }, 500);
       } else {
-        feedback.textContent = 'Try again.';
+        feedbackEl.textContent = 'Try again.';
       }
+    });
+
+    document.getElementById('backBtn').addEventListener('click', () => {
+      if (current > 0) { current--; loadQuestion(); }
+    });
+    document.getElementById('skipBtn').addEventListener('click', () => {
+      current++;
+      if (current < questions.length) loadQuestion(); else endQuiz();
     });
 
     loadQuestion();
