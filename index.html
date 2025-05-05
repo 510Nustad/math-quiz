@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+    h1 { text-align: center; }
+    #question { margin-bottom: 15px; font-weight: bold; }
+    #answerBox { width: 100%; padding: 8px; font-size: 16px; box-sizing: border-box; }
+    #checkBtn { padding: 8px 16px; font-size: 16px; margin-top: 10px; }
+    #feedback { margin-top: 15px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Study Quiz</h1>
+  <div id="quiz-container">
+    <div id="question"></div>
+    <input type="text" id="answerBox" placeholder="Type your answer here">
+    <button id="checkBtn">Check</button>
+    <div id="feedback"></div>
+  </div>
+
+  <script>
+    const questions = [
+      { q: "Determine whether the function is even, odd, or neither. g(x) = x³ - 7x", a: "odd" },
+      { q: "Write an equation: y = x² shifted 4 units right then 2 units down.", a: "(x-4)^2-2" },
+      { q: "Simplify (7 - 2i) / (4 + 3i) in a + bi form.", a: "22/25 - 29/25i" },
+      { q: "Find zeros of h(x)=3x² + x - 5.", a: "(-1+√61)/6,(-1-√61)/6" },
+      { q: "Discriminant of 3x² + 6x + 4 = 0: number/type of solutions.", a: "two distinct imaginary solutions" },
+      { q: "For f(x)=-x²+4x+5: x-intercepts, y-intercept, axis of symmetry, vertex, max/min.", a: "x-intercepts: -1,5; y-intercept:5; axis: x=2; vertex:(2,9); maximum" },
+      { q: "Classify p(x)=9x - 5x⁴ + 2x² - 1: type, leading term, coefficient, degree.", a: "quartic; leading term:-5x^4; coefficient:-5; degree:4" },
+      { q: "Graph f(x)=x³-2x²-9x+18: zeros and y-intercept.", a: "zeros:3,-3,2; y-intercept:18" },
+      { q: "(2x³ + 3x² - 4) ÷ (x - 1): quotient and remainder.", a: "2x^2+5x+5, remainder 1" },
+      { q: "Find all zeros of x³+2x²-5x-6.", a: "2,-1,-3" },
+      { q: "For g(x)=(x+3)/(x-2): asymptotes, x- and y-intercepts.", a: "vertical: x=2; horizontal: y=1; x-int:-3; y-int:-1.5" },
+      { q: "Solve x²+5x-14>0 in interval notation.", a: "(-∞,-7)∪(2,∞)" },
+      { q: "Compute (f ∘ g)(x) for f(x)=x²-2x+3, g(x)=2x+5.", a: "4x²+16x+18" }
+    ];
+
+    let current = 0;
+    const questionEl = document.getElementById('question');
+    const answerBox = document.getElementById('answerBox');
+    const checkBtn = document.getElementById('checkBtn');
+    const feedback = document.getElementById('feedback');
+
+    function loadQuestion() {
+      const { q } = questions[current];
+      questionEl.textContent = `Question ${current+1}: ${q}`;
+      answerBox.value = '';
+      feedback.textContent = '';
+    }
+
+    checkBtn.addEventListener('click', () => {
+      const userAns = answerBox.value.replace(/\s+/g, '').toLowerCase();
+      const correctAns = questions[current].a.replace(/\s+/g, '').toLowerCase();
+      if (userAns === correctAns) {
+        feedback.textContent = 'Good job!';
+        current++;
+        if (current < questions.length) {
+          setTimeout(loadQuestion, 1000);
+        } else {
+          questionEl.textContent = 'Quiz Complete!';
+          answerBox.style.display = 'none';
+          checkBtn.style.display = 'none';
+        }
+      } else {
+        feedback.textContent = 'Try again.';
+      }
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>
