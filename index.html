@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Study Quiz</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
   <style>
     /* Global Styles */
     body {
@@ -29,10 +30,12 @@
       max-width: 600px;
       margin: 40px 0;
     }
-    #cheatsheet, #quiz-container {
+    #cheatsheet,
+    #quiz-container,
+    #graph-container {
       background-color: #fff;
       border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       padding: 20px;
       margin-bottom: 20px;
     }
@@ -51,7 +54,8 @@
       font-weight: bold;
       font-size: 1.1em;
     }
-    #answerBox {
+    #answerBox,
+    #graphInput {
       width: 100%;
       padding: 10px;
       font-size: 1em;
@@ -87,6 +91,10 @@
     #feedback.correct {
       color: #188038;
     }
+    #jxgboard {
+      width: 100%;
+      height: 400px;
+    }
   </style>
 </head>
 <body>
@@ -98,111 +106,129 @@
       <h2>Answer Input Cheat Sheet</h2>
       <ul>
         <li>Fractions: use numerator/denominator, e.g.: 22/25</li>
-        <li>Complex: a+bi format, no spaces, e.g.: 22/25-29/25i</li>
-        <li>Lists: separate answers with commas, e.g.: 3,-3,2</li>
-        <li>Intervals: parentheses/unions, e.g.: (-∞,-7)∪(2,∞)</li>
-        <li>Equations: use ^, parentheses for shifts: (x-4)^2-2</li>
-        <li>Square roots: √ or sqrt(), e.g.: √61 or sqrt(61)</li>
+        <li>Complex: a+bi format, no spaces, e.g.: -47/61+32/61i</li>
+        <li>Lists: separate values with commas, e.g.: 1,-3/4</li>
+        <li>Intervals: parentheses and unions, e.g.: (-2,7)</li>
+        <li>Equations: use ^ for exponents, spaces optional</li>
+        <li>Roots: use √ or sqrt(), e.g.: √61 or sqrt(61)</li>
       </ul>
     </div>
 
     <div id="quiz-container">
       <div id="question"></div>
-      <input type="text" id="answerBox" placeholder="Type your answer here">
+      <input type="text" id="answerBox" placeholder="Type your answer here" />
       <div id="button-group">
         <button id="backBtn">← Back</button>
         <button id="skipBtn">Skip →</button>
+        <button id="showAnsBtn">Show Answer</button>
         <button id="checkBtn">Check</button>
       </div>
       <div id="feedback"></div>
     </div>
+
+    <div id="graph-container" style="display:none;">
+      <input type="text" id="graphInput" placeholder="Enter f(x)=..." />
+      <button id="plotBtn">Plot</button>
+      <div id="jxgboard"></div>
+      <div id="graphFeedback"></div>
+    </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
   <script>
     const questions = [
-      { q: "#1 Determine whether the function is even, odd, or neither. g(x) = x³ - 7x", a: "odd" },
-      { q: "#2 Write an equation for a function that has a graph with the given characteristics. The shape of y = x² is shifted 4 units to the right. Then the graph is shifted 2 units downward.", a: "(x-4)^2-2" },
-      { q: "#3 Simplify. Write your answer in the form a+bi. (7 - 2i) / (4 + 3i)", a: "22/25-29/25i" },
-      { q: "#4 Find the zeros of the function. Give exact answers. h(x) = 3x² + x - 5", a: "(-1+√61)/6,(-1-√61)/6" },
-      { q: "#5 Using the discriminant, b² - 4ac, determine if there is one real solution, two distinct real solutions, or two distinct imaginary solutions. 3x² + 4 = -6x", a: "two distinct imaginary solutions" },
-      { q: "#6 Find the x- and y-intercepts, axis of symmetry, vertex, and state whether the vertex is a maximum or minimum value. f(x) = -x² + 4x + 5", a: "x-intercepts:-1,5;y-intercept:5;axis:x=2;vertex:(2,9);maximum" },
-      { q: "#7 Classify the polynomial as constant, linear, quadratic, cubic, or quartic, and determine the leading term, the leading coefficient, and the degree of the polynomial. p(x) = 9x - 5x⁴ + 2x² - 1", a: "quartic;leading term:-5x^4;coefficient:-5;degree:4" },
-      { q: "#8 Graph the function. Find the zeros and y-intercept to help you graph. f(x) = x³ - 2x² - 9x + 18 (Hint: Consider factoring by grouping)", a: "zeros:3,-3,2;y-intercept:18" },
-      { q: "#9 Use synthetic division to find the quotient and the remainder. (2x³ + 3x² - 4) ÷ (x - 1)", a: "2x^2+5x+5,remainder1" },
-      { q: "#10 Find all the zeros of the polynomial function. h(x) = x³ + 2x² - 5x - 6 (Hint: Use the Rational Root Theorem to find possible rational zeros)", a: "2,-1,-3" },
-      { q: "#11 Graph the function. Identify and show all asymptotes (vertical, horizontal, or slant) as dashed lines. List the x- and y-intercepts. g(x) = (x + 3) / (x - 2)", a: "vertical:x=2;horizontal:y=1;x-int:-3;y-int:-1.5" },
-      { q: "#12 Solve the inequality. Write your answer in interval notation. x² + 5x - 14 > 0", a: "(-∞,-7)∪(2,∞)" },
-      { q: "#13 For the pair of functions, find the indicated composition. f(x) = x² - 2x + 3, g(x) = 2x + 5. Find (f ∘ g)(x)", a: "4x^2+16x+18" },
-      { q: "#14 Simplify. Write your answer in the form a+bi. (2 + 3i)(4 - i)", a: "11+10i" },
-      { q: "#15 Determine whether the function is even, odd, or neither. g(x) = x^4 - x^2", a: "even" },
-      { q: "#16 Write an equation for a function that has a graph with the given characteristics. The shape of y = √x is shifted 3 units to the left. Then the graph is shifted 1 unit upward.", a: "sqrt(x+3)+1" },
-      { q: "#17 Simplify. Write your answer in the form a+bi. (5 - i) / (2 + 4i)", a: "3/10-11/10i" },
-      { q: "#18 Solve for x: x² - 9 = 0", a: "3,-3" },
-      { q: "#19 Factor completely: x² - 5x + 6", a: "(x-2)(x-3)" },
-      { q: "#20 Solve the inequality: 2x - 3 < 7", a: "x<5" },
-      { q: "#21 Find the zeros of the function. f(x) = x² - 4x + 3", a: "1,3" },
-      { q: "#22 Find the domain of g(x) = 1 / (x + 2)", a: "(-∞,-2)∪(-2,∞)" },
-      { q: "#23 Expand: (x + 2)³", a: "x^3+6x^2+12x+8" },
-      { q: "#24 Simplify: log10(1000)", a: "3" },
-      { q: "#25 Solve: e^(2x) = 5", a: "ln(5)/2" },
-      { q: "#26 Simplify: √50", a: "5√2" },
-      { q: "#27 Solve the system: 2x + y = 5; x - y = 1", a: "x=2,y=1" },
-      { q: "#28 Find the midpoint between (1,2) and (5,8)", a: "3,5" },
-      { q: "#29 For f(x) = (2x+1)/(x-3): vertical and horizontal asymptotes; x- and y-intercepts", a: "vertical:x=3;horizontal:y=2;x-int:-1/2;y-int:-1/3" },
-      { q: "#30 Simplify: √18", a: "3√2" },
-      { q: "#31 Convert to a single logarithm: log a + log b", a: "log(ab)" },
-      { q: "#32 Expand: (x - y)²", a: "x^2-2xy+y^2" },
-      { q: "#33 Simplify: (x³)²", a: "x^6" },
-      { q: "#34 Evaluate at x=2: f(x) = 3x + 4", a: "10" },
-      { q: "#35 Find the distance between (0,0) and (3,4)", a: "5" },
-      { q: "#36 Simplify: x^0", a: "1" },
-      { q: "#37 Evaluate: | -5 |", a: "5" },
-      { q: "#38 Simplify: sin(0)", a: "0" },
-      { q: "#39 Evaluate: cos(π)", a: "-1" }
+      { q: "#1 Even, odd, or neither? Determine whether the function below is even, odd, or neither:<br>f(x)=x−7/x<br>Answer: Neither (check f(−x)≠f(x) and f(−x)≠−f(x)).", a: "neither" },
+      { q: "#2 Graph shift (square root). Write an equation for the graph of y=√x shifted 5 units to the left, then 2 units up. Answer: y=√(x+5)+2", a: "sqrt(x+5)+2" },
+      { q: "#3 Complex fraction. Simplify and write in a+bi form: (7+2i)/(−5−6i). Answer: multiply by −5+6i to get (−47+32i)/61 = −47/61 + 32/61i", a: "-47/61+32/61i" },
+      { q: "#4 Zeros of a quadratic. Find the exact zeros of f(x)=4x^2 − x − 3. Answer: x=(1±7)/8 ⇒ 1, −3/4.", a: "1,-3/4" },
+      { q: "#5 Discriminant test. Using b^2−4ac, determine whether 3x^2=−4x+1 has one real, two real, or two imaginary solutions. Answer: rewrite as 3x^2+4x−1=0, Δ=28>0 so two real solutions.", a: "two real solutions" },
+      { q: "#6 Parabola features. For f(x)=x^2−4x−8, find the x-intercepts, y-intercept, axis of symmetry, vertex, whether it’s max or min. Answer: x=2±2√3, y-int=−8, axis x=2, vertex=(2,−12), min.", a: "2±2√3,-8,2,(2,-12),min" },
+      { q: "#7 Polynomial classification. Classify f(x)=2x^4−7x^2+x−3 as constant, linear, quadratic, cubic, or quartic; give leading term, coefficient, degree. Answer: Quartic;2x^4;2;4.", a: "quartic;2x^4;2;4" },
+      { q: "#8 Graph a cubic. Sketch f(x)=x^3−3x^2−x+3. Mark intercepts: x=−1,1,3; y=3.", a: "intercepts:-1,1,3;3", graph: true },
+      { q: "#9 Synthetic division. Divide x^3+2x^2−x−8 by x−2. Answer: quotient=x^2+4x+7, remainder=6.", a: "x^2+4x+7,6" },
+      { q: "#10 Zeros of a cubic. Find zeros of f(x)=x^3−4x^2+2x+4. Answer: x=2, x=1±√3.", a: "2,1+√3,1-√3" },
+      { q: "#11 Rational graph & asymptotes. Graph f(x)=(x−3)/(x+2), list vertical asymptote x=−2, horizontal y=1, x-int=3, y-int=−3/2.", a: "x=-2,y=1,3,-3/2", graph: true },
+      { q: "#12 Quadratic inequality. Solve x^2−5x−14<0. Answer: (−2,7).", a: "(-2,7)" },
+      { q: "#13 Function composition. Given f(x)=3x^2+6x+9, g(x)=5x+2, find (g∘f)(x)=15x^2+30x+47.", a: "15x^2+30x+47" }
     ];
 
     let current = 0;
+    let board;
     const questionEl = document.getElementById('question');
     const answerBox = document.getElementById('answerBox');
+    const graphContainer = document.getElementById('graph-container');
+    const graphInput = document.getElementById('graphInput');
+    const plotBtn = document.getElementById('plotBtn');
     const feedbackEl = document.getElementById('feedback');
+    const graphFeedback = document.getElementById('graphFeedback');
     const meow = document.getElementById('meow');
+    const showAnsBtn = document.getElementById('showAnsBtn');
 
     function loadQuestion() {
-      let { q } = questions[current];
+      const { q, graph } = questions[current];
       questionEl.innerHTML = q;
-      answerBox.value = '';
       feedbackEl.textContent = '';
       feedbackEl.classList.remove('correct');
+      answerBox.style.display = graph ? 'none' : 'block';
+      graphContainer.style.display = graph ? 'block' : 'none';
+      if (graph) {
+        if (board) JXG.JSXGraph.freeBoard(board);
+        board = JXG.JSXGraph.initBoard('jxgboard', { boundingbox: [-10, 10, 10, -10], axis: true });
+        graphInput.value = '';
+        graphFeedback.textContent = '';
+      } else {
+        answerBox.value = '';
+      }
     }
 
     function endQuiz() {
       questionEl.textContent = 'Quiz Complete!';
       answerBox.style.display = 'none';
       document.getElementById('button-group').style.display = 'none';
+      graphContainer.style.display = 'none';
     }
 
     document.getElementById('checkBtn').addEventListener('click', () => {
-      const user = answerBox.value.replace(/\s+/g, '').toLowerCase();
-      const correct = questions[current].a.replace(/\s+/g, '').toLowerCase();
-      if (user === correct) {
-        meow.play();
-        feedbackEl.textContent = 'Good job!';
-        feedbackEl.classList.add('correct');
-        setTimeout(() => {
-          current++;
-          if (current < questions.length) loadQuestion(); else endQuiz();
-        }, 500);
-      } else {
-        feedbackEl.textContent = 'Try again.';
+      if (!questions[current].graph) {
+        const user = answerBox.value.replace(/\s+/g, '').toLowerCase();
+        const correct = questions[current].a.replace(/\s+/g, '').toLowerCase();
+        if (user === correct) {
+          meow.play();
+          feedbackEl.textContent = 'Good job!';
+          feedbackEl.classList.add('correct');
+          setTimeout(() => { current < questions.length - 1 ? (current++, loadQuestion()) : endQuiz(); }, 500);
+        } else feedbackEl.textContent = 'Try again.';
+      }
+    });
+
+    showAnsBtn.addEventListener('click', () => {
+      const answerText = questions[current].a;
+      feedbackEl.textContent = 'Answer: ' + answerText;
+      feedbackEl.classList.remove('correct');
+      feedbackEl.style.color = '#555';
+    });
+
+    plotBtn.addEventListener('click', () => {
+      const expr = graphInput.value;
+      try {
+        const f = board.create('functiongraph', [
+          function(x) { return eval(expr.replace(/\^/g, '**')); }
+        ]);
+        f.elmnt.addEventListener('click', () => {
+          graphFeedback.textContent = 'Curve clicked!';
+          meow.play();
+        });
+      } catch (e) {
+        graphFeedback.textContent = 'Invalid function.';
       }
     });
 
     document.getElementById('backBtn').addEventListener('click', () => {
       if (current > 0) { current--; loadQuestion(); }
     });
+
     document.getElementById('skipBtn').addEventListener('click', () => {
-      current++;
-      if (current < questions.length) loadQuestion(); else endQuiz();
+      current < questions.length - 1 ? (current++, loadQuestion()) : endQuiz();
     });
 
     loadQuestion();
