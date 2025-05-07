@@ -1,29 +1,27 @@
-<!DOCTYPE html>
+<!DOCTYPE html> <!-- HTML5 doctype declaration :contentReference[oaicite:10]{index=10} -->
 <html lang="en">
 <head>
-  <meta charset="UTF-8" /> <!-- Document encoding declaration :contentReference[oaicite:0]{index=0} -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Responsive viewport tag :contentReference[oaicite:1]{index=1} -->
-  <title>MrCappy Clone</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nustad | Developer Portfolio</title>
 
-  <!-- Google Fonts: Montserrat :contentReference[oaicite:2]{index=2} -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap"
-    rel="stylesheet"
-  />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
 
-  <!-- Font Awesome (optional) -->
+  <!-- Font Awesome for social icons -->
   <script src="https://kit.fontawesome.com/your-kit.js" crossorigin="anonymous"></script>
 
   <!-- Main CSS -->
   <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
   <header>
     <nav class="navbar">
-      <div class="logo">MrCappy</div>
+      <div class="logo">Nustad</div>
       <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
         <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
         <li><a href="#projects">Projects</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
@@ -31,31 +29,32 @@
   </header>
 
   <main>
-    <!-- Full-screen Three.js canvas :contentReference[oaicite:3]{index=3} -->
-    <canvas id="bg-canvas"></canvas>
+    <!-- Particle background container -->
+    <div id="tsparticles"></div>
 
-    <section id="about">
-      <h1>About Me</h1>
-      <p>Welcome to my portfolio site!</p>
+    <section id="home" class="section home">
+      <h1>Nustad</h1>
+      <p>Developer Portfolio</p>
+      <div class="social-icons">
+        <a href="https://github.com/nustad"><i class="fab fa-github"></i></a>
+        <a href="https://linkedin.com/in/nustad"><i class="fab fa-linkedin"></i></a>
+        <a href="https://twitter.com/nustad"><i class="fab fa-twitter"></i></a>
+      </div>
+      <a href="#about" class="down-arrow"><i class="fas fa-chevron-down"></i></a>
     </section>
 
-    <section id="projects">
-      <h1>Projects</h1>
-      <p>Here are some of my recent works.</p>
-    </section>
-
-    <section id="contact">
-      <h1>Contact</h1>
-      <!-- Formspree static form integration :contentReference[oaicite:4]{index=4} -->
-      <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-        <input type="email" name="email" placeholder="Your Email" required />
-        <textarea name="message" placeholder="Your Message" required></textarea>
-        <button type="submit">Send</button>
-      </form>
+    <section id="about" class="section">…</section>
+    <section id="skills" class="section">…</section>
+    <section id="projects" class="section">…</section>
+    <section id="contact" class="section">
+      <h2>Contact</h2>
+      <p>Email: <a href="mailto:hello@nustad.net">hello@nustad.net</a></p>
+      <p>Discord: <a href="https://discord.gg/yourserver">nustad#1234</a></p>
     </section>
   </main>
 
-  <!-- Three.js background script -->
-  <script type="module" src="script.js"></script>
+  <!-- tsParticles library -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

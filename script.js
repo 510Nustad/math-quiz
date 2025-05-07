@@ -1,42 +1,35 @@
-// Three.js dynamic background setup :contentReference[oaicite:7]{index=7}
-import * as THREE from 'https://unpkg.com/three@0.154.0/build/three.module.js';
-
-const canvas = document.getElementById('bg-canvas');
-const scene = new THREE.Scene();
-
-const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight,
-};
-
-// Camera
-const camera = new THREE.PerspectiveCamera(
-  75,
-  sizes.width / sizes.height,
-  0.1,
-  1000
-);
-camera.position.z = 5;
-
-// Renderer
-const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
-renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(window.devicePixelRatio);
-
-// Handle window resize :contentReference[oaicite:8]{index=8}
-window.addEventListener('resize', () => {
-  sizes.width = window.innerWidth;
-  sizes.height = window.innerHeight;
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
-  renderer.setSize(sizes.width, sizes.height);
+/* Initialize tsParticles with the "connect" preset to match mrcappy.net :contentReference[oaicite:14]{index=14} */
+tsParticles.load('tsparticles', {
+  fullScreen: { enable: true, zIndex: -1 },
+  fpsLimit: 60,
+  particles: {
+    number: { value: 80, density: { enable: true, area: 800 } },
+    color: { value: '#ffffff' },
+    shape: { type: 'circle' },
+    opacity: { value: 0.5 },
+    size: { value: 3 },
+    links: {
+      enable: true,
+      distance: 150,
+      color: '#ffffff',
+      opacity: 0.4,
+      width: 1
+    },
+    move: {
+      enable: true,
+      speed: 2,
+      outModes: { default: 'bounce' }
+    }
+  },
+  interactivity: {
+    events: {
+      onHover: { enable: true, mode: 'grab' },
+      onClick: { enable: true, mode: 'push' }
+    },
+    modes: {
+      grab: { distance: 200, links: { opacity: 0.5 } },
+      push: { quantity: 4 }
+    }
+  },
+  detectRetina: true
 });
-
-// Animation loop
-function animate() {
-  requestAnimationFrame(animate);
-  // Add custom animations here if desired
-  renderer.render(scene, camera);
-}
-
-animate();
